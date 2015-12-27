@@ -25,7 +25,7 @@ We check how many columns consist of mostly NA's.
 # find out how many columns have more than 19,000 NA's
 NAColumns<-which(colSums(is.na(data))>19000)
 ```
-`length(NAColumns)` columns are almost entirely NA's.  We will not use them to train our model so we drop them from our dataset.
+`r length(NAColumns)` columns are almost entirely NA's.  We will not use them to train our model so we drop them from our dataset.
 ```{r cache=T}
 data<-data[,-NAColumns]
 ```
