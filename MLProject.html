@@ -79,7 +79,7 @@ img {
 <pre class="r"><code># total observations = 19,622.  
 # find out how many columns have more than 19,000 NA's
 NAColumns&lt;-which(colSums(is.na(data))&gt;19000)</code></pre>
-<p><code>length(NAColumns)</code> columns are almost entirely NA’s. We will not use them to train our model so we drop them from our dataset.</p>
+<p>100 columns are almost entirely NA’s. We will not use them to train our model so we drop them from our dataset.</p>
 <pre class="r"><code>data&lt;-data[,-NAColumns]</code></pre>
 <p>We also notice that the first seven columns are non-measurement data such as a sequential number X, user name, time stamps. We won’t use these in training our model either so we drop them as well.</p>
 <pre class="r"><code>data&lt;-data[,-c(1:7)]</code></pre>
