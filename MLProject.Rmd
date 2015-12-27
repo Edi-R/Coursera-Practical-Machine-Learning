@@ -1,0 +1,90 @@
+---
+title: "Coursera - Practical Machine Learning Project"
+output: html_document
+---
+
+##Background
+A group of 6 participants were asked to perform barbell lifts correctly and incorrectly in 5 different ways. The movements were recorded using accelerometers on the belt, forearm, arm, and dumbell to try to quantify how well the exercises were done.
+More information is available from [this website](http://groupware.les.inf.puc-rio.br/har).   
+
+The goal of this project is to find a model that will use the different measurements recorded to predict the manner in which the exercise was done.
+
+##Getting and Cleaning the Data  
+We download the [training](https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv) and [test](https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv) datasets to our current directory.
+
+We first load the training dataset.
+```{r cache=T}
+data <- read.csv("pml-training.csv",na.strings=c("NA","#DIV/0!",""))
+```
+  
+Examining the data using the str function, we find that the training dataset has 19,622 observations of 160 variables and notice that some columns seem to consist mostly (entirely?) of NA's.
+
+We check how many columns consist of mostly NA's.
+```{r cache = T}
+# total observations = 19,622.  
+# find out how many columns have more than 19,000 NA's
+NAColumns<-which(colSums(is.na(data))>19000)
+```
+`length(NAColumns)` columns are almost entirely NA's.  We will not use them to train our model so we drop them from our dataset.
+```{r cache=T}
+data<-data[,-NAColumns]
+```
+  
+We also notice that the first seven columns are non-measurement data such as a sequential number X, user name, time stamps.  We won't use these in training our model either so we drop them as well.
+```{r cache=T}
+data<-data[,-c(1:7)]
+```
+  
+We are now left with `length(data)` columns and are ready to train our model.
+  
+## Training the Model
+We want to build a model that will predict the manner in which the exercise was done - stored in the classe variable of our dataset.
+From our lectures in Week 3 - Random Forests, we learned that random forests are difficult to interpret but they are usually one of the two top performing algorithms in prediction contests.  
+So we use the random forest function to train our model.  
+Note: We tried to use the train function with method="rf" but this took a long time.  Using the randomForest function from library(randomForest) was much faster.
+
+```{r eval=F}
+library(caret)
+library(randomForest)
+```
+```{r cache=T}
+set.seed(1)  # set seed so we can reproduce the results
+
+# partition our data into 60% for training and 40% for testing
+trainIdx <-createDataPartition(y=data$classe,p=0.6,list=F)
+training<-data[trainIdx,]
+testing<-data[-trainIdx,]
+
+# train the model using Random Forest, using all remaining variables
+rfmodel<-randomForest(classe~.,data=training)
+
+# run the model against the test dataset
+rfpredtest<-predict(rfmodel,newdata=testing)
+
+# compare the results of our prediction against the classe variable
+results<-confusionMatrix(testing$classe, rfpredtest)
+
+results
+```
+
+## Conclusion
+The confusion matrix shows an accuracy rate of 0.9945, implying an out of sample error rate of 0.55% which is a reasonable result.   
+  
+We also tried boosting using the gbm method and default parameters but this resulted in an accuracy of 96.18%.  
+  
+Therefore we select random forest as the best model.  
+
+## Test against 20 test cases  
+Finally, we run the model against the 20 test cases provided.
+
+```{r cache=T}
+testingset<-read.csv("pml-testing.csv",na.strings=c("NA","#DIV/0!",""))
+testpred <- predict(rfmodel,newdata=testingset)
+testpred 
+
+for (i in 1:length(testpred)) {
+  fname<-paste0("problem_id",i,".txt")
+  write.table(as.character(testpred[i]),file=fname,quote=F,row.names = F,col.names = F)  
+  }
+
+```
