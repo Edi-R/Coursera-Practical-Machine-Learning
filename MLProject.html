@@ -83,7 +83,7 @@ NAColumns&lt;-which(colSums(is.na(data))&gt;19000)</code></pre>
 <pre class="r"><code>data&lt;-data[,-NAColumns]</code></pre>
 <p>We also notice that the first seven columns are non-measurement data such as a sequential number X, user name, time stamps. We won’t use these in training our model either so we drop them as well.</p>
 <pre class="r"><code>data&lt;-data[,-c(1:7)]</code></pre>
-<p>We are now left with <code>length(data)</code> columns and are ready to train our model.</p>
+<p>We are now left with 53 columns and are ready to train our model.</p>
 </div>
 <div id="training-the-model" class="section level2">
 <h2>Training the Model</h2>

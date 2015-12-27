@@ -35,7 +35,11 @@ We also notice that the first seven columns are non-measurement data such as a s
 data<-data[,-c(1:7)]
 ```
   
+<<<<<<< HEAD
 We are now left with `length(data)` columns and are ready to train our model.
+=======
+We are now left with `r length(data)` columns and are ready to train our model.
+>>>>>>> master
   
 ## Training the Model
 We want to build a model that will predict the manner in which the exercise was done - stored in the classe variable of our dataset.
